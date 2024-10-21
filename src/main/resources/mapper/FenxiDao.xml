@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.FenxiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.fenxi_name as fenxiName
+        ,a.fenxi_uuid_number as fenxiUuidNumber
+        ,a.fenxi_photo as fenxiPhoto
+        ,a.fenxi_types as fenxiTypes
+        ,a.fenxi_quxiang as fenxiQuxiang
+        ,a.fenxi_xinzi as fenxiXinzi
+        ,a.fenxi_jiuyel as fenxiJiuyel
+        ,a.fenxi_content as fenxiContent
+        ,a.fenxi_delete as fenxiDelete
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.FenxiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM fenxi  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.fenxiName != '' and params.fenxiName != null and params.fenxiName != 'null' ">
+                and a.fenxi_name like CONCAT('%',#{params.fenxiName},'%')
+            </if>
+            <if test=" params.fenxiUuidNumber != '' and params.fenxiUuidNumber != null and params.fenxiUuidNumber != 'null' ">
+                and a.fenxi_uuid_number like CONCAT('%',#{params.fenxiUuidNumber},'%')
+            </if>
+            <if test="params.fenxiTypes != null and params.fenxiTypes != ''">
+                and a.fenxi_types = #{params.fenxiTypes}
+            </if>
+            <if test=" params.fenxiQuxiang != '' and params.fenxiQuxiang != null and params.fenxiQuxiang != 'null' ">
+                and a.fenxi_quxiang like CONCAT('%',#{params.fenxiQuxiang},'%')
+            </if>
+            <if test="params.fenxiXinziStart != null and params.fenxiXinziStart != ''">
+                <![CDATA[  and a.fenxi_xinzi >= #{params.fenxiXinziStart}   ]]>
+            </if>
+            <if test="params.fenxiXinziEnd != null and params.fenxiXinziEnd != ''">
+                <![CDATA[  and a.fenxi_xinzi <= #{params.fenxiXinziEnd}   ]]>
+            </if>
+             <if test="params.fenxiXinzi != null and params.fenxiXinzi != ''">
+                and a.fenxi_xinzi = #{params.fenxiXinzi}
+             </if>
+            <if test="params.fenxiJiuyelStart != null and params.fenxiJiuyelStart != ''">
+                <![CDATA[  and a.fenxi_jiuyel >= #{params.fenxiJiuyelStart}   ]]>
+            </if>
+            <if test="params.fenxiJiuyelEnd != null and params.fenxiJiuyelEnd != ''">
+                <![CDATA[  and a.fenxi_jiuyel <= #{params.fenxiJiuyelEnd}   ]]>
+            </if>
+             <if test="params.fenxiJiuyel != null and params.fenxiJiuyel != ''">
+                and a.fenxi_jiuyel = #{params.fenxiJiuyel}
+             </if>
+            <if test=" params.fenxiContent != '' and params.fenxiContent != null and params.fenxiContent != 'null' ">
+                and a.fenxi_content like CONCAT('%',#{params.fenxiContent},'%')
+            </if>
+            <if test="params.fenxiDeleteStart != null and params.fenxiDeleteStart != ''">
+                <![CDATA[  and a.fenxi_delete >= #{params.fenxiDeleteStart}   ]]>
+            </if>
+            <if test="params.fenxiDeleteEnd != null and params.fenxiDeleteEnd != ''">
+                <![CDATA[  and a.fenxi_delete <= #{params.fenxiDeleteEnd}   ]]>
+            </if>
+             <if test="params.fenxiDelete != null and params.fenxiDelete != ''">
+                and a.fenxi_delete = #{params.fenxiDelete}
+             </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

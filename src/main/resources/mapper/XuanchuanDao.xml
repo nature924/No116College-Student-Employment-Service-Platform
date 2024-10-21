@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.XuanchuanDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.xuanchuan_name as xuanchuanName
+        ,a.xuanchuan_uuid_number as xuanchuanUuidNumber
+        ,a.xuanchuan_photo as xuanchuanPhoto
+        ,a.xuanchuan_video as xuanchuanVideo
+        ,a.xuanchuan_content as xuanchuanContent
+        ,a.xuanchuan_delete as xuanchuanDelete
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.XuanchuanView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM xuanchuan  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.xuanchuanName != '' and params.xuanchuanName != null and params.xuanchuanName != 'null' ">
+                and a.xuanchuan_name like CONCAT('%',#{params.xuanchuanName},'%')
+            </if>
+            <if test=" params.xuanchuanUuidNumber != '' and params.xuanchuanUuidNumber != null and params.xuanchuanUuidNumber != 'null' ">
+                and a.xuanchuan_uuid_number like CONCAT('%',#{params.xuanchuanUuidNumber},'%')
+            </if>
+            <if test=" params.xuanchuanVideo != '' and params.xuanchuanVideo != null and params.xuanchuanVideo != 'null' ">
+                and a.xuanchuan_video like CONCAT('%',#{params.xuanchuanVideo},'%')
+            </if>
+            <if test=" params.xuanchuanContent != '' and params.xuanchuanContent != null and params.xuanchuanContent != 'null' ">
+                and a.xuanchuan_content like CONCAT('%',#{params.xuanchuanContent},'%')
+            </if>
+            <if test="params.xuanchuanDeleteStart != null and params.xuanchuanDeleteStart != ''">
+                <![CDATA[  and a.xuanchuan_delete >= #{params.xuanchuanDeleteStart}   ]]>
+            </if>
+            <if test="params.xuanchuanDeleteEnd != null and params.xuanchuanDeleteEnd != ''">
+                <![CDATA[  and a.xuanchuan_delete <= #{params.xuanchuanDeleteEnd}   ]]>
+            </if>
+             <if test="params.xuanchuanDelete != null and params.xuanchuanDelete != ''">
+                and a.xuanchuan_delete = #{params.xuanchuanDelete}
+             </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
